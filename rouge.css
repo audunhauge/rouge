@@ -1,0 +1,54 @@
+:root {
+    --board:calc(12*32px);
+}
+
+#main {
+    position: relative;
+    width:600px;
+    height: 500px;
+    margin:20px;
+}
+#main > div {
+    border: solid gray 1px;
+}
+
+#board {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:var(--board);
+    height: var(--board);
+    display: grid;
+    grid-template-columns: repeat(12,1fr);
+}
+#board > div {
+    width:32px;
+    height:32px;
+    background-image: url("images/tiles32.png");
+    background-position-x: 0px;
+    background-position-y: 0px;
+}
+
+#info {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    width:150px;
+    height: 350px;
+}
+#minimap {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width:120px;
+    height: 120px;
+}
+#status {
+    position: absolute;
+    left: 0;
+    bottom: 10px;
+    width:var(--board);
+    height: 100px;
+}
+
+
