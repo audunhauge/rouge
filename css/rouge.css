@@ -12,6 +12,7 @@
     border: solid gray 1px;
 }
 
+
 #board {
     position: absolute;
     left: 0;
@@ -21,12 +22,27 @@
     display: grid;
     grid-template-columns: repeat(12,1fr);
 }
+#actors {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:var(--board);
+    height: var(--board);
+}
+#avatar {
+    position: absolute;
+    width:32px;
+    height:32px; 
+    left: calc(32px*5);
+    top: calc(32px*5);
+    background-image: url("../images/avatar.png");
+}
 #board > div {
     width:32px;
     height:32px;
-    background-image: url("images/tiles32.png");
-    background-position-x: 0px;
-    background-position-y: 0px;
+    background-image: url("../images/tiles32.png");
+    background-position-x: calc(-32px * 0);
+    background-position-y: calc(-32px * 3)
 }
 
 #info {
