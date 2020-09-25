@@ -1,5 +1,17 @@
 // @ts-check
 
+import  Map  from './mapgen/index.js';
+/*
+import Delaunator from './dual-mesh/node_modules/delaunator';
+let Poisson = require('poisson-disk-sampling');
+let TriangleMesh = require('./');
+let MeshBuilder = require('./create');
+let mesh = new MeshBuilder({boundarySpacing: 450})
+        .addPoisson(Poisson, 450)
+        .create(true);
+*/
+// const map = new Map([],{seed:123,amplitude:3,length:4},() => Math.random()*2-1);
+
 /**
  * Clamp låser en verdi til området [lo,hi]
  * Verdier utenfor blir til lo|hi 
@@ -99,7 +111,7 @@ class Avatar extends Actor {
 }
 
 
-function setup() {
+export function setup() {
     avatar = new Avatar();
     document.querySelectorAll(".monster").forEach(div => {
         const monster = new Monster();
