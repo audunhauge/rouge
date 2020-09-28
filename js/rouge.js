@@ -9,7 +9,19 @@
  * @returns {number} lo dersom x < lo, hi dersom x > hi, ellers uendra
  */
 
- let avatar;
+let avatar;
+
+let monsters = [];
+
+
+/**
+ * Terningfunksjon
+ * @param {number} n
+ * @returns {number} terning verdi
+ */
+function dice(n) {
+    return Math.trunc(Math.random()*n) + 1;
+}
 
 class Actor {
     x = 2;
@@ -17,6 +29,9 @@ class Actor {
     alive = true;
     /** @type {HTMLElement} */
     div;
+    constructor() {
+        console.log("Lager en ting");
+    }
     render() {
         this.div.style.left = (this.x * 32) + "px";
         this.div.style.top = (this.y * 32) + "px";
@@ -27,14 +42,41 @@ class Actor {
     }
 }
 
+class Monster extends Actor {
+  constructor() {
+      super();
+  }
+  move() {
+      this.x += dice(3)-2;
+      this.y += dice(3)-2;
+  }
+   
+}
+
+class Player extends Actor {
+    constructor() {
+        super();
+    } 
+}
+
 
 
 export function setup() {
-    avatar = new Actor();
+    avatar = new Player();
     avatar.div = document.getElementById("avatar");
     avatar.render();
 
     document.addEventListener("keydown", doStuff);
+
+    document.querySelectorAll(".monster").forEach( div => {
+        const m = new Monster();
+        // @ts-ignore
+        m.div = div;
+        m.x = Math.trunc(Math.random()*11);
+        m.y = Math.trunc(Math.random()*11);
+        m.render();
+        monsters.push(m);
+    })
 
 
     /**
@@ -68,6 +110,11 @@ export function setup() {
                 }
                 break;
 
+        }
+        for (let i=0; i< monsters.length; i++) {
+            let m = monsters[i];
+            m.move();
+            m.render();
         }
     }
 }
