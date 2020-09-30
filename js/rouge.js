@@ -1,13 +1,5 @@
 // @ts-check
 
-/**
- * Clamp låser en verdi til området [lo,hi]
- * Verdier utenfor blir til lo|hi
- * @param {number} x
- * @param {number} lo
- * @param {number} hi
- * @returns {number} lo dersom x < lo, hi dersom x > hi, ellers uendra
- */
 
 let avatar;
 
