@@ -36,48 +36,26 @@ export function setup() {
   const { avatar, monsters, map } = startLevel(divMonsters, divActors);
   map.render(avatar.x-5, avatar.y-5, brikkeListe);
   avatar.render();
-  enemyAction(monsters,avatar);
+  enemyAction(monsters,avatar,map);
 
   /**
    * @param {KeyboardEvent} e
    */
   function doStuff(e) {
-   
     const key = e.key;
-    switch (key) {
-      case "ArrowLeft":
-        if (avatar.x > 0) {
-          avatar.x -= 1;
-        }
-        break;
-      case "ArrowRight":
-        if (avatar.x < B.w - 1) {
-          avatar.x += 1;
-        }
-        break;
-      case "ArrowUp":
-        if (avatar.y > 0) {
-          avatar.y -= 1;
-        }
-        break;
-      case "ArrowDown":
-        if (avatar.y < B.h - 1) {
-          avatar.y += 1;
-        }
-        break;
-    }
-    enemyAction(monsters,avatar);
+    avatar.action(key,map);
+    enemyAction(monsters,avatar,map);
     map.render(avatar.x-5, avatar.y-5, brikkeListe);
     avatar.render();
   }
 }
 
-function enemyAction(monsters,avatar) {
+function enemyAction(monsters,avatar,map) {
     const {x,y} = avatar;   // må vite hvor avatar står da kartet centreres på hen
-    const center = {x,y};
+    const center = {x:x-5,y:y-5};
     for (let i = 0; i < monsters.length; i++) {
         let m = monsters[i];
-        m.move();
+        m.action(avatar,map);
         m.render(center);
       }
 }
@@ -90,7 +68,7 @@ function enemyAction(monsters,avatar) {
  * @returns { { avatar: Player, monsters: Monster[], map: Map }}
  */
 function startLevel(divMonsters, divActors) {
-  const FIENDS = 4;
+  const FIENDS = 1;
   const avatar = new Player(1, 1);
   divActors.append(avatar.div);
   avatar.render();

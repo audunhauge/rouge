@@ -63,6 +63,11 @@
     background-position-y: calc(-32px * 3)
 }
 
+#board > div[data-terrain="1"] { background-position-x: calc(-32px * 0);}
+#board > div[data-terrain="2"] { background-position-x: calc(-32px * 1);}
+#board > div[data-terrain="3"] { background-position-x: calc(-32px * 2);}
+#board > div[data-terrain="4"] { background-position-x: calc(-32px * 3);}
+
 #info {
     position: absolute;
     right: 10px;
