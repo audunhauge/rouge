@@ -72,7 +72,7 @@ class Map {
     for (let y = iy; y < iy + 12; y += 1) {
       for (let x = ix; x < ix + 12; x += 1) {
         const t = this.terrain[y * 80 + x];
-        divList[idx].dataset.terrain = String(t);
+        divList[idx].dataset.terrain = String(t & 31);
         idx++;
       }
     }
@@ -89,6 +89,22 @@ class Map {
       // merk at dersom det er et monster/ting i ruta - da er t > 32
     }
     return 0;
+  }
+
+  /**
+     * @param {CanvasRenderingContext2D} ctx
+     */
+  minimap(ctx) {
+      const imgdata = ctx.createImageData(80,80);
+      let i = 0;
+      this.terrain.forEach(t => {
+          imgdata.data[i] = (t & 0xe0) ? 250 : 0;
+          imgdata.data[i+1] = (t ===1) ? 200 : ((t===2) ? 100 : (t===3) ? 150 : 0);
+          imgdata.data[i+2] = (t) === 3 ? 150 : 0;
+          imgdata.data[i+3] = 250;
+          i += 4;
+      })
+      ctx.putImageData(imgdata,0,0);
   }
 }
 

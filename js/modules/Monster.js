@@ -4,8 +4,8 @@ import { clamp, dice } from "./util.js";
 import { Map } from "./Terrain.js";
 
 const Thing = {
-  MONSTER: 1,
-  ITEM: 2,
+  ITEM: 1,
+  MONSTER: 2,
   DOOR: 3,
 }
 
