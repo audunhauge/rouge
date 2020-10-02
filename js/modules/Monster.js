@@ -58,7 +58,7 @@ class Monster extends Actor {
     this.div = /** @type {HTMLElement} */ (div);
   }
   canWalk(t) {
-    return "12".includes(t);
+    return "123456".includes(t);
   }
 
   move(dx, dy) {
@@ -116,7 +116,7 @@ class Player extends Actor {
   }
 
   canWalk(t) {
-    return "123".includes(t);
+    return "1234567".includes(t);
   }
 
   move(dx, dy) {

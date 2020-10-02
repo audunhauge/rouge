@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 
 
 /**
@@ -8,7 +8,7 @@
  * for the AsyncAstar class.
  * @param {String} attr is the key whose value will be compared on each object.
  */
-var SortedHash = function SortedHash(attr:any) {
+var SortedHash = function SortedHash(attr) {
     // Initialize the heap,
     this.heap = {};
     // then store a reference to the attr desired,

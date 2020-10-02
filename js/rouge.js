@@ -19,7 +19,7 @@ const B = { w: 80, h: 80 };
 
 
 const oldRand = Math.random;    // keep old random version
-// Math.seedrandom("test");
+//Math.seedrandom("test");
 
 export function setup() {
   const [

@@ -1,10 +1,10 @@
-// @flow
+// @ts-check
 
 
-declare function SortedHash(s:string):any;
-
-
-var AsyncAstar = function(options) {
+var AsyncAstar = /**
+ * @param {{ initial: any; neighbors: any; heuristic: (any) => number; onComplete: any; timeout: number; onTimeout: any; }} options
+ */
+ function(options) {
   
   // Declare a reference to the new object to be used in callbacks.
   var self = this;

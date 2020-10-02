@@ -53,20 +53,41 @@
     top: calc(32px*5);
     background-image: url("../images/creature32.png");
     background-position-x: calc(-32px * 0);
-    background-position-y: calc(-32px * 12)
+    background-position-y: calc(-32px * 12);
 }
 #board > div {
     width:32px;
     height:32px;
     background-image: url("../images/tiles32.png");
     background-position-x: calc(-32px * 0);
-    background-position-y: calc(-32px * 3)
+    background-position-y: calc(-32px * 3);
 }
 
-#board > div[data-terrain="1"] { background-position-x: calc(-32px * 0);}
-#board > div[data-terrain="2"] { background-position-x: calc(-32px * 1);}
-#board > div[data-terrain="3"] { background-position-x: calc(-32px * 2);}
-#board > div[data-terrain="4"] { background-position-x: calc(-32px * 3);}
+#board > div[data-terrain="1"] { background-position-x: calc(-32px * 6);}
+#board > div[data-terrain="2"] { 
+    background-position-x: calc(-32px * 1);
+    background-position-y: calc(-32px * 8);
+}
+#board > div[data-terrain="3"] { background-position-x: calc(-32px * 0);}
+#board > div[data-terrain="4"] { 
+    background-position-x: calc(-32px * 0);
+    background-position-y: calc(-32px * 4);
+}
+#board > div[data-terrain="8"] { 
+    background-position-x: calc(-32px * 3);
+}
+#board > div[data-terrain="7"] { 
+    background-position-x: calc(-32px * 2);
+}
+#board > div[data-terrain="5"] { 
+    background-position-x: calc(-32px * 1);
+}
+#board > div[data-terrain="6"] { 
+    background-position-x: calc(-32px * 3);
+    background-position-y: calc(-32px * 10);
+}
+
+
 
 #info {
     position: absolute;

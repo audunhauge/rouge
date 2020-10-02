@@ -1,6 +1,7 @@
 // @ts-check
 
 import { dice, clamp } from "./util.js";
+import { build, T } from './MapGen.js';
 
 /**
  * hver kartplassering er et 8bits tall 0..255
@@ -25,6 +26,7 @@ class Map {
 
   constructor() {
     const map = new Uint8ClampedArray(80 * 80);
+    /*
     // legger inn litt tilfeldig terreng
     // 0=gress, 1=skog, 2=daler, 3=fjell
     for (let y = 0; y < 80; y += 1) {
@@ -32,6 +34,8 @@ class Map {
         map[y * 80 + x] = lovalues();
       }
     }
+    */
+    const islands = build(map,80,80);
     this.terrain = map;
   }
 

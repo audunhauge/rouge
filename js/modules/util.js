@@ -10,6 +10,16 @@ function dice(n) {
 }
 
 /**
+ * Random number [lo,hi]
+ * @param {number} lo 
+ * @param {number} hi 
+ */
+function roll(lo, hi) {
+  let diff = 1 + hi - lo;
+  return Math.floor(Math.random() * diff) + lo;
+}
+
+/**
  * Klemmer x mellom lo og hi
  * @param {number} x
  * @param {number} lo
@@ -22,4 +32,4 @@ function clamp(x, lo, hi) {
   return x;
 }
 
-export { dice, clamp };
+export { dice, clamp , roll};
