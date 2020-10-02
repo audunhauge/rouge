@@ -4,14 +4,23 @@ import { dice, clamp } from "./util.js";
 
 /**
  * hver kartplassering er et 8bits tall 0..255
- * Bruker 3 bits til info om monster og ting
+ * Bruker 3 bits til info om monster og ting, 32=ting,64=monster,128=door
+ * Alle tre kan være ON samtidig - 0xE0 = 192+32 = 224  osv
  * De siste 5 bits er terreng-koder: 31 forskjellige slags terreng + 0 som betyr IMPASSABLE
  * 1 er gress 2 er skog osv
+ * Monster har en liste med terreng de kan gå på
  */
 
-const lovalues = () => [0, 0].map(e => dice(4)).reduce((s, v) => Math.min(s, v), 6);
+ /**
+  * Kaster terning slik at P(x) gir 1>2>3>4
+  * Sannsyn for gress er høyt, sannsyn for fjell er lavt
+  * For å minske sannsyn for fjell, øk antall kast [0,0] => [0,0,0]
+  * Merk at sannsynet for 4 faller veldig fort med flere kast
+  */
+const lovalues = () => [0, 0, 0].map(e => dice(4)).reduce((s, v) => Math.min(s, v), 6);
 
 class Map {
+  /** @type {Uint8ClampedArray} */
   terrain;
 
   constructor() {
