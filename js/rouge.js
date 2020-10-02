@@ -51,7 +51,7 @@ export function setup() {
     enemyAction(monsters,avatar,map);
     map.render(avatar.x-5, avatar.y-5, brikkeListe);
     avatar.render();
-    map.minimap(ctx);
+    map.minimap(ctx,avatar);
   }
 }
 

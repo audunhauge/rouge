@@ -11,12 +11,12 @@ import { dice, clamp } from "./util.js";
  * Monster har en liste med terreng de kan gå på
  */
 
- /**
-  * Kaster terning slik at P(x) gir 1>2>3>4
-  * Sannsyn for gress er høyt, sannsyn for fjell er lavt
-  * For å minske sannsyn for fjell, øk antall kast [0,0] => [0,0,0]
-  * Merk at sannsynet for 4 faller veldig fort med flere kast
-  */
+/**
+ * Kaster terning slik at P(x) gir 1>2>3>4
+ * Sannsyn for gress er høyt, sannsyn for fjell er lavt
+ * For å minske sannsyn for fjell, øk antall kast [0,0] => [0,0,0]
+ * Merk at sannsynet for 4 faller veldig fort med flere kast
+ */
 const lovalues = () => [0, 0, 0].map(e => dice(4)).reduce((s, v) => Math.min(s, v), 6);
 
 class Map {
@@ -41,8 +41,8 @@ class Map {
    * @param {number} x
    * @param {number} y
    */
-  place(thing,x,y) {
-    let t = this.terrain[y * 80 + x];  
+  place(thing, x, y) {
+    let t = this.terrain[y * 80 + x];
     t = (t & 31) + (thing << 6);
     this.terrain[y * 80 + x] = t;
   }
@@ -52,7 +52,7 @@ class Map {
    * @param {number} x
    * @param {number} y
    */
-  clear(x,y) {
+  clear(x, y) {
     let t = this.terrain[y * 80 + x];
     this.terrain[y * 80 + x] = t & 31;
   }
@@ -85,7 +85,7 @@ class Map {
    */
   fetch(x, y) {
     if (x >= 0 && x < 80 && y >= 0 && y * 80 + x < this.terrain.length) {
-      return this.terrain[y * 80 + x];   
+      return this.terrain[y * 80 + x];
       // merk at dersom det er et monster/ting i ruta - da er t > 32
     }
     return 0;
@@ -94,17 +94,28 @@ class Map {
   /**
      * @param {CanvasRenderingContext2D} ctx
      */
-  minimap(ctx) {
-      const imgdata = ctx.createImageData(80,80);
-      let i = 0;
-      this.terrain.forEach(t => {
-          imgdata.data[i] = (t & 0xe0) ? 250 : 0;
-          imgdata.data[i+1] = (t ===1) ? 200 : ((t===2) ? 100 : (t===3) ? 150 : 0);
-          imgdata.data[i+2] = (t) === 3 ? 150 : 0;
-          imgdata.data[i+3] = 250;
-          i += 4;
-      })
-      ctx.putImageData(imgdata,0,0);
+  minimap(ctx, avatar) {
+    const imgdata = ctx.createImageData(80, 80);
+    let i = 0;
+    this.terrain.forEach(t => {
+      imgdata.data[i] = (t & 0xe0) ? 250 : 0;
+      imgdata.data[i + 1] = (t === 1) ? 200 : ((t === 2) ? 100 : (t === 3) ? 150 : 0);
+      imgdata.data[i + 2] = (t) === 3 ? 150 : 0;
+      imgdata.data[i + 3] = 250;
+      i += 4;
+    })
+    const { x, y } = avatar;
+    let ix = clamp(x - 5, 0, 80 - 11);
+    let iy = clamp(y - 5, 0, 80 - 11);
+    for (let y = iy; y < iy + 12; y += 1) {
+      for (let x = ix; x < ix + 12; x += 1) {
+        let i = (y * 80 + x) * 4;
+        imgdata.data[i] |= 0x80;
+        imgdata.data[i + 1] |= 0x40;
+        imgdata.data[i + 2] |= 0x40;
+      }
+    }
+    ctx.putImageData(imgdata, 0, 0);
   }
 }
 
