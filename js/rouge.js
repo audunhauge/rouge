@@ -27,7 +27,7 @@ export function setup() {
     divMonsters,
     divActors,
     divInfo,
-    divMinimap,
+    cnvMinimap ,
     divStatus,
   ] = getByIds("board,monsters,actors,info,minimap,status");
 
@@ -42,6 +42,10 @@ export function setup() {
   avatar.render();
   enemyAction(monsters,avatar,map);
 
+  // @ts-ignore
+  const ctx = cnvMinimap.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+
   /**
    * @param {KeyboardEvent} e
    */
@@ -51,6 +55,7 @@ export function setup() {
     enemyAction(monsters,avatar,map);
     map.render(avatar.x-5, avatar.y-5, brikkeListe);
     avatar.render();
+    map.minimap(ctx,avatar);
   }
 }
 
@@ -72,7 +77,7 @@ function enemyAction(monsters,avatar,map) {
  * @returns { { avatar: Player, monsters: Monster[], map: Map }}
  */
 function startLevel(divMonsters, divActors) {
-  const FIENDS = 1;
+  const FIENDS = 12;
   const avatar = new Player(1, 1);
   divActors.append(avatar.div);
   avatar.render();
@@ -80,8 +85,8 @@ function startLevel(divMonsters, divActors) {
   const monsters = [];
   for (let i = 0; i < FIENDS; i++) {
     const m = new Monster(0, 0);
-    m.x = dice(12) - 1;
-    m.y = dice(12) - 1;
+    m.x = dice(80) - 1;
+    m.y = dice(80) - 1;
     monsters.push(m);
     divMonsters.append(m.div);
   }
