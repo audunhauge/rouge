@@ -1,14 +1,14 @@
 // @ts-check
 
 import { dice, clamp } from "./util.js";
-import { build, T } from './MapGen.js';
+import { build, T , B} from './MapGen.js';
 
 /**
  * hver kartplassering er et 8bits tall 0..255
  * Bruker 3 bits til info om monster og ting, 32=ting,64=monster,128=door
  * Alle tre kan være ON samtidig - 0xE0 = 192+32 = 224  osv
  * De siste 5 bits er terreng-koder: 31 forskjellige slags terreng + 0 som betyr IMPASSABLE
- * 1 er gress 2 er skog osv
+ * 1 er sjø 2 er grunne, 3 er gress osv
  * Monster har en liste med terreng de kan gå på
  */
 
@@ -21,8 +21,10 @@ class Map {
 
   constructor() {
     const map = new Uint8ClampedArray(80 * 80);
-    this.islands = build(map,80,80);
+    const {islands,roads} = build(map,80,80);
+    this.islands = islands
     this.terrain = map;
+    this.roads =roads;
   }
 
   /**

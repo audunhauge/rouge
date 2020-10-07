@@ -3,6 +3,7 @@
 import { Monster, Player } from "./modules/Monster.js";
 import { Map } from "./modules/Terrain.js";
 import { clamp, dice, roll } from "./modules/util.js";
+import { B } from "./modules/MapGen.js";
 
 /**
  * Tar en liste med ids og kjører getById på dem
@@ -14,8 +15,6 @@ const getByIds = (list) => {
   return idList.map((id) => document.getElementById(id));
 };
 
-// dimensjonene på spillebrettet
-const B = { w: 80, h: 80 };
 
 
 

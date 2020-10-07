@@ -1,10 +1,13 @@
+// @ts-check
 /**
-*   EasyStar.js
-*   github.com/prettymuchbryce/EasyStarJS
+*   Astar.js
+*   based on github.com/prettymuchbryce/EasyStarJS
 *   Licensed under the MIT license.
-*
-*   Implementation By Bryce Neal (@prettymuchbryce)
+*   Modified from implemetation by
+*    Bryce Neal (@prettymuchbryce)
 **/
+
+
 
 var EasyStar = {}
 
@@ -23,6 +26,7 @@ class Instance {
     endY;
     nodeHash = {};
     openList;
+    isDoneCalculating = false;
 }
 
 class Node {
@@ -61,7 +65,7 @@ EasyStar.js = function () {
     /**
     * Sets the collision grid that EasyStar uses.
     *
-    * @param {Array|Number} tiles An array of numbers that represent
+    * @param {number[] | number} tiles An array of numbers that represent
     * which tiles in your grid should be considered
     * acceptable, or "walkable".
     **/
@@ -69,7 +73,7 @@ EasyStar.js = function () {
         if (tiles instanceof Array) {
             // Array
             acceptableTiles = tiles;
-        } else if (!isNaN(parseFloat(tiles)) && isFinite(tiles)) {
+        } else if (Number.isFinite(tiles)) {
             // Number
             acceptableTiles = [tiles];
         }
@@ -127,8 +131,8 @@ EasyStar.js = function () {
     /**
     * Sets the tile cost for a particular tile type.
     *
-    * @param {Number} The tile type to set the cost for.
-    * @param {Number} The multiplicative cost associated with the given tile.
+    * @param {Number} tileType The tile type to set the cost for.
+    * @param {Number} cost The multiplicative cost associated with the given tile.
     **/
     this.setTileCost = function (tileType, cost) {
         costMap[tileType] = cost;
@@ -140,7 +144,7 @@ EasyStar.js = function () {
     *
     * @param {Number} x The x value of the point to cost.
     * @param {Number} y The y value of the point to cost.
-    * @param {Number} The multiplicative cost associated with the given point.
+    * @param {Number} cost The multiplicative cost associated with the given point.
     **/
     this.setAdditionalPointCost = function (x, y, cost) {
         if (pointsToCost[y] === undefined) {
@@ -590,23 +594,7 @@ EasyStar.LEFT = 'LEFT'
 EasyStar.TOP_LEFT = 'TOP_LEFT'
 
 class Heap {
-    /*
-    Heap.push = heappush;
-
-    Heap.pop = heappop;
-
-    Heap.replace = heapreplace;
-
-    Heap.pushpop = heappushpop;
-
-    Heap.heapify = heapify;
-
-    Heap.updateItem = updateItem;
-
-    Heap.nlargest = nlargest;
-
-    Heap.nsmallest = nsmallest;
-    */
+    
     constructor (cmp) {
         this.cmp = cmp != null ? cmp : defaultCmp;
         this.nodes = [];
@@ -677,15 +665,7 @@ floor = Math.floor, min = Math.min;
 Default comparison function to be used
  */
 
-defaultCmp = function (x, y) {
-    if (x < y) {
-        return -1;
-    }
-    if (x > y) {
-        return 1;
-    }
-    return 0;
-};
+defaultCmp = (x, y) => (x<y) ? -1 : (y>x) ? 1 : 0;
 
 /*
 Insert item x in list a, and keep it sorted assuming a is sorted.
@@ -753,43 +733,7 @@ heappop = function (array, cmp) {
     return returnitem;
 };
 
-/*
-Pop and return the current smallest value, and add the new item.
- 
-This is more efficient than heappop() followed by heappush(), and can be
-more appropriate when using a fixed size heap. Note that the value
-returned may be larger than item! That constrains reasonable use of
-this routine unless written as part of a conditional replacement:
-    if item > array[0]
-      item = heapreplace(array, item)
- */
 
-heapreplace = function (array, item, cmp) {
-    var returnitem;
-    if (cmp == null) {
-        cmp = defaultCmp;
-    }
-    returnitem = array[0];
-    array[0] = item;
-    _siftup(array, 0, cmp);
-    return returnitem;
-};
-
-/*
-Fast version of a heappush followed by a heappop.
- */
-
-heappushpop = function (array, item, cmp) {
-    var _ref;
-    if (cmp == null) {
-        cmp = defaultCmp;
-    }
-    if (array.length && cmp(array[0], item) < 0) {
-        _ref = [array[0], item], item = _ref[0], array[0] = _ref[1];
-        _siftup(array, 0, cmp);
-    }
-    return item;
-};
 
 /*
 Transform list into a heap, in-place, in O(array.length) time.
@@ -833,61 +777,7 @@ updateItem = function (array, item, cmp) {
     return _siftup(array, pos, cmp);
 };
 
-/*
-Find the n largest elements in a dataset.
- */
 
-nlargest = function (array, n, cmp) {
-    var elem, result, _i, _len, _ref;
-    if (cmp == null) {
-        cmp = defaultCmp;
-    }
-    result = array.slice(0, n);
-    if (!result.length) {
-        return result;
-    }
-    heapify(result, cmp);
-    _ref = array.slice(n);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        elem = _ref[_i];
-        heappushpop(result, elem, cmp);
-    }
-    return result.sort(cmp).reverse();
-};
-
-/*
-Find the n smallest elements in a dataset.
- */
-
-nsmallest = function (array, n, cmp) {
-    var elem, i, los, result, _i, _j, _len, _ref, _ref1, _results;
-    if (cmp == null) {
-        cmp = defaultCmp;
-    }
-    if (n * 10 <= array.length) {
-        result = array.slice(0, n).sort(cmp);
-        if (!result.length) {
-            return result;
-        }
-        los = result[result.length - 1];
-        _ref = array.slice(n);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            elem = _ref[_i];
-            if (cmp(elem, los) < 0) {
-                insort(result, elem, 0, null, cmp);
-                result.pop();
-                los = result[result.length - 1];
-            }
-        }
-        return result;
-    }
-    heapify(array, cmp);
-    _results = [];
-    for (i = _j = 0, _ref1 = min(n, array.length); 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        _results.push(heappop(array, cmp));
-    }
-    return _results;
-};
 
 _siftdown = function (array, startpos, pos, cmp) {
     var newitem, parent, parentpos;

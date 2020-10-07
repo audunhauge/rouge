@@ -2,6 +2,7 @@
 
 import { clamp, dice } from "./util.js";
 import { Map } from "./Terrain.js";
+import { B } from "./MapGen.js";
 
 const Thing = {
   ITEM: 1,
@@ -121,8 +122,8 @@ class Player extends Actor {
   }
 
   move(dx, dy) {
-    this.x += dx;
-    this.y += dy;
+    this.x = (this.x +dx + B.w) % B.w;
+    this.y = (this.y +dy + B.h) % B.h;
   }
 
   /**
@@ -147,11 +148,13 @@ class Player extends Actor {
         break;
     }
     if (dx || dy) {
-      const t = String(map.fetch(x + dx, y + dy));
+      const newx = (x +dx + B.w) % B.w;
+      const newy = (y +dy + B.h) % B.h;
+      const t = String(map.fetch(newx, newy));
       if (this.canWalk(t)) {
         map.clear(x, y)
         this.move(dx, dy);
-        map.place(Thing.MONSTER, x + dx, y + dy);
+        map.place(Thing.MONSTER, newx, newy);
       }
     }
   }
