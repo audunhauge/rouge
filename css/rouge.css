@@ -12,6 +12,14 @@
     border: solid gray 1px;
 }
 
+#overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:var(--board);
+    height: var(--board);
+}
+
 
 #board {
     position: absolute;

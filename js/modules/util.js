@@ -10,12 +10,12 @@ function dice(n) {
 }
 
 /**
- * Random number [lo,hi]
+ * Random number [ lo, hi >
  * @param {number} lo 
  * @param {number} hi 
  */
 function roll(lo, hi) {
-  let diff = 1 + hi - lo;
+  let diff = hi - lo;
   return Math.floor(Math.random() * diff) + lo;
 }
 

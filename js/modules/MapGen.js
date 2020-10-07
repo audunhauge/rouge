@@ -1,6 +1,7 @@
 // @ts-check
 
 import { roll } from './util.js';
+import { EasyStar } from './Astar.js';
 
 class T {
     static OCEAN = 1;
@@ -23,13 +24,17 @@ class T {
  * @param {number} _RADIUS 
  * @param {string} _FREQ 
  */
-function build(theMap, w, h, _LAND = 4, _MINIMUM = 1, _RADIUS = 12, _FREQ = "776655443") {
+function build(theMap, w, h, _LAND = 3, _MINIMUM = 4, _RADIUS = 8, _FREQ = "8877766655443") {
     // fill map with ocean
-    for (let y = 0; y < h ; y += 1) {
+    for (let y = 0; y < h; y += 1) {
         for (let x = 0; x < w; x += 1) {
             theMap[y * 80 + x] = T.OCEAN;
         }
     }
+
+
+
+   
 
     // generate random number of islands
     // x,y is pos, r is radius
@@ -40,7 +45,6 @@ function build(theMap, w, h, _LAND = 4, _MINIMUM = 1, _RADIUS = 12, _FREQ = "776
     let size = w * w * h * h;
     let logSize = Math.floor(Math.log(size));
     let islandCount = MINIMUM + roll(Math.floor(logSize / 3 + 1), logSize + 1);
-    let islands = Array(islandCount).fill(0);
     let maxR = RADIUS + roll(3, 9);
     let minR = Math.max(1, RADIUS - roll(3, 9));
     // space the islands
@@ -49,7 +53,7 @@ function build(theMap, w, h, _LAND = 4, _MINIMUM = 1, _RADIUS = 12, _FREQ = "776
     let dx = -Math.floor(sqr / 1.7);
     let dy = Math.floor(sqr / 2.2);
 
-    islands = islands.map((e) => {
+    let islands = Array(islandCount).fill(0).map((e) => {
         dx += sqr;
         if (dx > w) {
             dx = sqr;
@@ -92,7 +96,7 @@ function build(theMap, w, h, _LAND = 4, _MINIMUM = 1, _RADIUS = 12, _FREQ = "776
         for (let y = 0; y < h; y++) {
             let e = theMap[x + y * w];
             if (e === T.OCEAN) {
-                // check in 6 directions
+                // check in 8 directions
                 let adjacent = getNeighbours(x, y);
                 let m = Math.max(...adjacent);
                 if (adjacent.length > 1 && m > T.GRASS) {
@@ -135,6 +139,45 @@ function build(theMap, w, h, _LAND = 4, _MINIMUM = 1, _RADIUS = 12, _FREQ = "776
         }
     }
 
+     /**
+     * En todimensjonal proxy for kartet - Astar koden vil ha et array [ [] [] [] ... ]
+     * Returnerer en subarray - dette er ikke en slice (som vil være en kopi)
+     * En subarray er bare en view over samme uintarray theMap
+     */
+    const map2d = {
+        get: function (obj, prop) {
+            if (prop === "length") return w;
+            return obj.subarray(prop * w, (prop+1) * w );
+        }
+    }
+
+    const mainland = islands[0];
+    const farland = islands[islands.length-1];
+    const grid = new Proxy(theMap, map2d);
+    console.log(mainland,farland);
+
+    const easystar = new EasyStar.js();
+    easystar.setGrid(grid);
+
+    easystar.setAcceptableTiles([1,2,3,4,5,6,7,8]);
+    easystar.setTileCost(1,30);
+    easystar.setTileCost(2,20);
+    easystar.setTileCost(8,90);
+    easystar.setTileCost(7,10);
+    easystar.setTileCost(6,5);
+    //easystar.enableDiagonals();
+    easystar.findPath(mainland.x, mainland.y,farland.x,farland.y,(path) => {
+       if (path === null) {
+           console.log("no path");
+       } else {
+           console.log(path);
+           for (let p of path) {
+             theMap[p.x + w * p.y] = T.GRASS;
+           }
+       }
+    });
+    easystar.calculate();
+
 
     function getNeighbours(x, y) {
         let n = neighbours(x, y, w, h).map(([x, y]) => theMap[x + w * y]);
@@ -175,4 +218,4 @@ function neighbours(x, y, w, h) {
     return n;
 }
 
-export { build, T, neighbours};
+export { build, T, neighbours };

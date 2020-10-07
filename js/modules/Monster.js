@@ -58,7 +58,7 @@ class Monster extends Actor {
     this.div = /** @type {HTMLElement} */ (div);
   }
   canWalk(t) {
-    return "123456".includes(t);
+    return "3456".includes(t);
   }
 
   move(dx, dy) {
@@ -75,8 +75,9 @@ class Monster extends Actor {
     const dx = dice(3) - 2;
     const dy = dice(3) - 2;
     if (dx || dy) {
+      const on = String(map.fetch(x, y)); 
       const t = String(map.fetch(x + dx, y + dy));
-      if (this.canWalk(t)) {
+      if (this.canWalk(t) ) {
         map.clear(x, y)
         this.move(dx, dy);
         map.place(Thing.MONSTER, x + dx, y + dy);
@@ -116,7 +117,7 @@ class Player extends Actor {
   }
 
   canWalk(t) {
-    return "1234567".includes(t);
+    return "34567".includes(t);
   }
 
   move(dx, dy) {

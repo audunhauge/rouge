@@ -12,30 +12,16 @@ import { build, T } from './MapGen.js';
  * Monster har en liste med terreng de kan gå på
  */
 
-/**
- * Kaster terning slik at P(x) gir 1>2>3>4
- * Sannsyn for gress er høyt, sannsyn for fjell er lavt
- * For å minske sannsyn for fjell, øk antall kast [0,0] => [0,0,0]
- * Merk at sannsynet for 4 faller veldig fort med flere kast
- */
-const lovalues = () => [0, 0, 0].map(e => dice(4)).reduce((s, v) => Math.min(s, v), 6);
 
 class Map {
   /** @type {Uint8ClampedArray} */
   terrain;
+  /** @type {any[]} */
+  islands;  // island centers
 
   constructor() {
     const map = new Uint8ClampedArray(80 * 80);
-    /*
-    // legger inn litt tilfeldig terreng
-    // 0=gress, 1=skog, 2=daler, 3=fjell
-    for (let y = 0; y < 80; y += 1) {
-      for (let x = 0; x < 80; x += 1) {
-        map[y * 80 + x] = lovalues();
-      }
-    }
-    */
-    const islands = build(map,80,80);
+    this.islands = build(map,80,80);
     this.terrain = map;
   }
 
@@ -103,8 +89,8 @@ class Map {
     let i = 0;
     this.terrain.forEach(t => {
       imgdata.data[i] = (t & 0xe0) ? 250 : 0;
-      imgdata.data[i + 1] = (t === 1) ? 200 : ((t === 2) ? 100 : (t === 3) ? 150 : 0);
-      imgdata.data[i + 2] = (t) === 3 ? 150 : 0;
+      imgdata.data[i + 1] = (t === 3) ? 200 : ((t === 4) ? 100 : (t === 5) ? 150 : 0);
+      imgdata.data[i + 2] = (t) === 1 ? 250 : (t === 2) ? 150 : 0;
       imgdata.data[i + 3] = 250;
       i += 4;
     })
