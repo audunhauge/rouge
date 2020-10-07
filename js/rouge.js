@@ -1,7 +1,7 @@
 // @ts-check
 
 import { Monster, Player } from "./modules/Monster.js";
-import { Map } from "./modules/Terrain.js";
+import { Map, Road } from "./modules/Terrain.js";
 import { clamp, dice, roll } from "./modules/util.js";
 import { B } from "./modules/MapGen.js";
 
@@ -38,7 +38,11 @@ export function setup() {
 
   document.addEventListener("keydown", doStuff);
 
+  /**  @type {CanvasRenderingContext2D} */   // @ts-ignore
+  const overCtx = canOverlay.getContext("2d");
   const { avatar, monsters, map } = startLevel(divMonsters, divActors);
+  const roads = new Road(map.roads,overCtx)
+  roads.render();
   map.render(avatar.x - 5, avatar.y - 5, brikkeListe);
   avatar.render();
   enemyAction(monsters, avatar, map);
@@ -49,16 +53,10 @@ export function setup() {
   map.minimap(minimapCtx, avatar);
 
  
-  /**  @type {CanvasRenderingContext2D} */   // @ts-ignore
-  const overCtx = canOverlay.getContext("2d");
 
-  overCtx.lineWidth = 2;
-  overCtx.strokeStyle = 'blue';
-  overCtx.beginPath();
-  overCtx.moveTo(10,10);
-  overCtx.lineTo(530,530);
-  overCtx.stroke();
+  
 
+  
   /**
    * @param {KeyboardEvent} e
    */

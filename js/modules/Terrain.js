@@ -13,6 +13,32 @@ import { build, T , B} from './MapGen.js';
  */
 
 
+class Road {
+    constructor(roads, ctx) {
+        this.roads = roads;
+        /**  @type {CanvasRenderingContext2D} */ 
+        this.ctx = ctx;
+    }
+
+    render() {
+        const ctx = this.ctx;
+        this.roads.forEach(r => {
+            ctx.beginPath();
+            r.reduce( (from,to) => {
+                if (from && to) {
+                    const {x,y} = to;
+                    ctx.lineTo(x*32+16,y*32+16);
+                } else {
+                    const {x,y} = to;
+                    ctx.moveTo(x*32+16,y*32+16);
+                }
+                return to;
+            },null);
+            ctx.stroke();            
+        });
+    }
+}
+
 class Map {
   /** @type {Uint8ClampedArray} */
   terrain;
@@ -111,4 +137,4 @@ class Map {
   }
 }
 
-export { Map };
+export { Map, Road };
