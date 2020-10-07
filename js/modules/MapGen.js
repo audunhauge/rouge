@@ -186,6 +186,13 @@ function build(
       easystar.findPath(from.x, from.y, to.x, to.y, (path) => {
         if (path) {
           roads.push(path);
+          path.forEach(r => {
+            const {x,y} = r;
+            const t = theMap[x + w * y];
+            if (t < T.GRASS) {
+                theMap[x + w * y] = T.SHALLOWS;
+            }
+          })
         }
       });
       easystar.calculate();
