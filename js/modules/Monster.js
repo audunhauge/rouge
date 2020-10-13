@@ -186,4 +186,4 @@ class Player extends Actor {
 
 }
 
-export { Monster, Player };
+export { Monster, Actor , Thing, Stats };

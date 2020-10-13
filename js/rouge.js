@@ -1,6 +1,7 @@
 // @ts-check
 
-import { Monster, Player } from "./modules/Monster.js";
+import { Monster } from "./modules/Monster.js";
+import {  Player } from "./modules/Player.js";
 import { Map, Road } from "./modules/Terrain.js";
 import { clamp, dice, roll } from "./modules/util.js";
 import { B } from "./modules/MapGen.js";
