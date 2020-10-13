@@ -16,6 +16,7 @@ const getByIds = (list) => {
 };
 
 
+let keys = {};  // active keys
 
 
 const oldRand = Math.random;    // keep old random version
@@ -32,46 +33,108 @@ export function setup() {
     divStatus,
   ] = getByIds("overlay,board,monsters,actors,info,minimap,status");
 
+  for (let i = 0; i < 144; i++) {
+    const div = document.createElement("div");
+    divBoard.append(div);
+    div.style.top = (32 * Math.trunc(i / 12)) + "px";
+    div.style.left = (32 * (i % 12)) + "px";
+  }
+
+  let moveTimer;  // setter en timeout på tenketid for spiller
+
   const brikkeListe = /** @type {HTMLElement[]} */ Array.from(
     divBoard.querySelectorAll("div")
   );
 
-  document.addEventListener("keydown", doStuff);
+  // bevegelse av avatar
+  // venter på keyup slik at vi kan sjekke om to piltaster
+  // er aktive samtidig
+  const delta = {dx:0,dy:0};
+  
+  document.addEventListener("keydown", setkey);
+  document.addEventListener("keyup", getReady);
 
+  // overCtx er et canvas som ligger over brikkene
+  // tegner veier (og elver - senere) på denne
   /**  @type {CanvasRenderingContext2D} */   // @ts-ignore
   const overCtx = canOverlay.getContext("2d");
   const { avatar, monsters, map } = startLevel(divMonsters, divActors);
-  const roads = new Road(map.roads,overCtx)
+  const roads = new Road(map.roads, overCtx)
   roads.render();
+
+  // rendrer startposisjon og minimap
   map.render(avatar.x - 5, avatar.y - 5, brikkeListe);
   avatar.render();
   enemyAction(monsters, avatar, map);
 
-  // @ts-ignore
+  /**  @type {CanvasRenderingContext2D} */   // @ts-ignore
   const minimapCtx = cnvMinimap.getContext("2d");
   minimapCtx.imageSmoothingEnabled = false;
   map.minimap(minimapCtx, avatar);
 
- 
-
-  
-
-  
   /**
    * @param {KeyboardEvent} e
    */
-  function doStuff(e) {
-    const key = e.key;
-    avatar.action(key, map);
+  function setkey(e) {
+    keys[e.key] = 1;
+  }
+
+  // Bruker har ikke flytta innen gitt tidsfrist
+  // la monster gjøre sine ting
+  function nextMove() {
+    delta.dx = 0;
+    delta.dy = 0;
+    doStuff( );
+  }
+
+  /**
+   * Bruker slapp opp en knapp - sjekk hvilke
+   * som var aktivert - kan dermed trykke
+   * venstre + ned for å gå på skrå nedover.
+   * Tastetrykk er allerede lagra i keys
+   * verdien er 1 for aktive knapper
+   * Kan være 0 eller undefined for alle andre knapper
+   * Bruker derfor ??
+   * @param {KeyboardEvent} e
+   */
+  function getReady(e) {
+      let dx = 0; let dy=0;
+      dx -= (keys.ArrowLeft ?? 0);
+      dx += (keys.ArrowRight ?? 0);
+      dy -= (keys.ArrowUp ?? 0);
+      dy += (keys.ArrowDown ?? 0);
+      delta.dx = dx;
+      delta.dy = dy;
+      doStuff();
+      keys = {};     // drop alle lagra tastetrykk
+  }
+
+
+  /**
+   * Var opprinnelig kobla til eventlistener for keydown
+   * Nå aktiveres denne fra nextMove - timerstyrt
+   * eller doStuff - trigga av keyup
+   * Dermed går spillet videre ved brukerhendelse eller etter 1s
+   */
+  function doStuff() {
+    clearTimeout(moveTimer);
+    avatar.action(delta, map);
+    delta.dx = 0;
+    delta.dy = 0;
+    keys = {};
     enemyAction(monsters, avatar, map);
-    map.render(avatar.x - 5, avatar.y - 5, brikkeListe);
+    const { x, y } = avatar;
+    map.render(x - 5, y - 5, brikkeListe);
     avatar.render();
+    const center = { x: x - 6, y: y - 6 };
+    roads.overlay(center);
     map.minimap(minimapCtx, avatar);
+    moveTimer = setTimeout(nextMove,1000);
   }
 }
 
 function enemyAction(monsters, avatar, map) {
-  const { x, y } = avatar;   // må vite hvor avatar står da kartet centreres på hen
+  const { x, y } = avatar;   // kart sentreres på avatar
   const center = { x: x - 5, y: y - 5 };
   for (let i = 0; i < monsters.length; i++) {
     let m = monsters[i];

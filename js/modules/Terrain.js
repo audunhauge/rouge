@@ -1,7 +1,7 @@
 // @ts-check
 
 import { dice, clamp } from "./util.js";
-import { build, T , B} from './MapGen.js';
+import { build, T, B } from './MapGen.js';
 
 /**
  * hver kartplassering er et 8bits tall 0..255
@@ -14,29 +14,42 @@ import { build, T , B} from './MapGen.js';
 
 
 class Road {
-    constructor(roads, ctx) {
-        this.roads = roads;
-        /**  @type {CanvasRenderingContext2D} */ 
-        this.ctx = ctx;
-    }
+  constructor(roads, ctx) {
+    this.roads = roads;
+    /**  @type {CanvasRenderingContext2D} */
+    this.ctx = ctx;
+    const mapCanvas = document.createElement("canvas");
+    mapCanvas.width = B.w * 32;
+    mapCanvas.height = B.h * 32;
+    this.secondaryCtx = mapCanvas.getContext("2d");
+  }
 
-    render() {
-        const ctx = this.ctx;
-        this.roads.forEach(r => {
-            ctx.beginPath();
-            r.reduce( (from,to) => {
-                if (from && to) {
-                    const {x,y} = to;
-                    ctx.lineTo(x*32+16,y*32+16);
-                } else {
-                    const {x,y} = to;
-                    ctx.moveTo(x*32+16,y*32+16);
-                }
-                return to;
-            },null);
-            ctx.stroke();            
-        });
-    }
+  overlay({x,y}) {
+    let ix = clamp(x, 0, 80 - 12);
+    let iy = clamp(y, 0, 80 - 12);
+    const from = this.secondaryCtx;
+    const to = this.ctx;
+    const imgdata = from.getImageData(ix*32,iy*32,12*32,12*32);
+    to.putImageData(imgdata,0,0);
+  }
+
+  render() {
+    const ctx = this.secondaryCtx;
+    this.roads.forEach(r => {
+      ctx.beginPath();
+      r.reduce((from, to) => {
+        if (from && to) {
+          const { x, y } = to;
+          ctx.lineTo(x * 32 - 16, y * 32 - 16 );
+        } else {
+          const { x, y } = to;
+          ctx.moveTo(x * 32 - 16, y * 32 - 16);
+        }
+        return to;
+      }, null);
+      ctx.stroke();
+    });
+  }
 }
 
 class Map {
@@ -47,32 +60,32 @@ class Map {
 
   constructor() {
     const map = new Uint8ClampedArray(80 * 80);
-    const {islands,roads} = build(map,80,80);
+    const { islands, roads } = build(map, 80, 80);
     this.islands = islands
     this.terrain = map;
-    this.roads =roads;
+    this.roads = roads;
   }
 
   /**
-   * Plasserer en ting (1=monster,2=item,3=door) på kartet
+   * Plasserer en  (2=monster,1=item) på kartet
    * @param {number} thing  0..3
    * @param {number} x
    * @param {number} y
    */
   place(thing, x, y) {
     let t = this.terrain[y * 80 + x];
-    t = (t & 31) + (thing << 6);
+    t = (t & 63) + 128;
     this.terrain[y * 80 + x] = t;
   }
 
   /**
-   * Fjerner monster/item/door fra kartet
+   * Fjerner monster/item fra kartet, 32 er vei
    * @param {number} x
    * @param {number} y
    */
   clear(x, y) {
     let t = this.terrain[y * 80 + x];
-    this.terrain[y * 80 + x] = t & 31;
+    this.terrain[y * 80 + x] = t & 63;
   }
 
   /**
@@ -99,12 +112,12 @@ class Map {
    * @param {number} x
    * @param {number} y
    * @returns {number} t = terrengkode , t<32 for vanlig terreng
-   *  t = 0 for utenfor brett, t>32 for her er det et monster/ting/dør
+   *  t = 0 for utenfor brett, t>127  her er det et monster/ting
    */
   fetch(x, y) {
     if (x >= 0 && x < 80 && y >= 0 && y * 80 + x < this.terrain.length) {
       return this.terrain[y * 80 + x];
-      // merk at dersom det er et monster/ting i ruta - da er t > 32
+      // merk at dersom det er et monster/ting i ruta - da er t > 127
     }
     return 0;
   }
@@ -116,7 +129,7 @@ class Map {
     const imgdata = ctx.createImageData(80, 80);
     let i = 0;
     this.terrain.forEach(t => {
-      imgdata.data[i] = (t & 0xe0) ? 250 : 0;
+      imgdata.data[i] = (t & 0xE0) ? 250 : 0;
       imgdata.data[i + 1] = (t === 3) ? 200 : ((t === 4) ? 100 : (t === 5) ? 150 : 0);
       imgdata.data[i + 2] = (t) === 1 ? 250 : (t === 2) ? 150 : 0;
       imgdata.data[i + 3] = 250;

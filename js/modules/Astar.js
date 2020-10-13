@@ -77,7 +77,7 @@ EasyStar.js = function () {
             // Number
             acceptableTiles = [tiles];
         }
-        walk = (x,y) => acceptableTiles.includes( collisionGrid[y][x]);
+        walk = (x,y) => acceptableTiles.includes( collisionGrid[y][x]) || collisionGrid[y][x] & 32;
     };
 
     /**
@@ -117,8 +117,10 @@ EasyStar.js = function () {
     **/
     this.setGrid = function (grid) {
         collisionGrid = grid;
+        costMap = {1:100,2:90,3:20,4:1,5:2,6:5,7:15,8:50,9:90}
 
         //Setup cost map
+        /*
         for (var y = 0; y < collisionGrid.length; y++) {
             for (var x = 0; x < collisionGrid[0].length; x++) {
                 if (!costMap[collisionGrid[y][x]]) {
@@ -126,6 +128,8 @@ EasyStar.js = function () {
                 }
             }
         }
+        console.log(costMap);
+        */
     };
 
     /**
@@ -502,7 +506,7 @@ EasyStar.js = function () {
     // Helpers
     var isTileWalkable = function (collisionGrid, acceptableTiles, x, y, sourceNode) {
         const t = collisionGrid[y][x];
-        return acceptableTiles.includes(t);
+        return (t & 32) !== 0 || acceptableTiles.includes(t);
         var directionalCondition = directionalConditions[y] && directionalConditions[y][x];
         if (directionalCondition) {
             var direction = calculateDirection(sourceNode.x - x, sourceNode.y - y)
@@ -543,7 +547,9 @@ EasyStar.js = function () {
     };
 
     var getTileCost = function (x, y) {
-        return (pointsToCost[y] && pointsToCost[y][x]) || costMap[collisionGrid[y][x]]
+        const t = collisionGrid[y][x];
+        if ((t & 32) !== 0) return 0;   // its a road
+        return costMap[t]
     };
 
     var coordinateToNode = function (instance, x, y, parent, cost) {

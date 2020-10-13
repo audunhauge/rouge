@@ -2,7 +2,18 @@
 
 import { clamp, dice } from "./util.js";
 import { Map } from "./Terrain.js";
-import { B } from "./MapGen.js";
+import { B, T } from "./MapGen.js";
+
+
+// default stats for alle klasser
+class Stats {
+  intelligence = 1.0;
+  wisdom = 1.0;
+  strength = 1.0;
+  speed = 1.0;
+  manaMax = 10;
+  staminaMax = 2;
+}
 
 const Thing = {
   ITEM: 1,
@@ -22,6 +33,22 @@ class Actor {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.stats = new Stats();
+  }
+
+  /**
+   * Increments or set value, increment for props with max value
+   * Set value if no max
+   * @param {string} prop property to update
+   * @param {*} delta increment or new value
+   */
+  regen(prop,delta) {
+    if (this.stats[prop+"Max"]) {
+      const max = this.stats[prop+"Max"];
+      this.prop = clamp(this.prop+delta,0,max);
+    } else {
+      this.prop = delta;
+    }
   }
   render(ancor) {
     // don't render if not on board
@@ -88,6 +115,9 @@ class Monster extends Actor {
 }
 
 class Player extends Actor {
+  turnOver = false;
+  stamina = 2;          // brukes på moves og angrep/spells
+  mana = 10;            // magisk kraft tilgjengelig til spells
   /**
    * @param {any} x
    * @param {any} y
@@ -97,6 +127,12 @@ class Player extends Actor {
     const div = document.createElement("div");
     div.id = "avatar";
     this.div = /** @type {HTMLElement} */ (div);
+  }
+
+  // hver turn regenereres stamina og mana
+  recover() {
+    this.regen("stamina",1);
+    this.regen("mana",1);
   }
 
   render() {
@@ -118,7 +154,7 @@ class Player extends Actor {
   }
 
   canWalk(t) {
-    return "34567".includes(t);
+    return "34567".includes(t) || t & T.ROAD;
   }
 
   move(dx, dy) {
@@ -126,27 +162,16 @@ class Player extends Actor {
     this.y = (this.y +dy + B.h) % B.h;
   }
 
+
+
   /**
-   * @param {string} key
+   * @param {{dx:number,dy:number}} delta 
    * @param {import("./Terrain.js").Map} map
    */
-  action(key, map) {
+  action(delta, map) {
     const { x, y } = this;
-    let dx = 0; let dy = 0;
-    switch (key) {
-      case "ArrowLeft":
-        dx = -1;
-        break;
-      case "ArrowRight":
-        dx = 1;
-        break;
-      case "ArrowUp":
-        dy = -1;
-        break;
-      case "ArrowDown":
-        dy = 1;
-        break;
-    }
+    const {dx,dy} = delta;
+    
     if (dx || dy) {
       const newx = (x +dx + B.w) % B.w;
       const newy = (y +dy + B.h) % B.h;

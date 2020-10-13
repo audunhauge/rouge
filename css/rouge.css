@@ -27,8 +27,6 @@
     top: 0;
     width:var(--board);
     height: var(--board);
-    display: grid;
-    grid-template-columns: repeat(12,1fr);
 }
 #monsters,
 #actors {
@@ -43,6 +41,7 @@
     background-color: rgba(255,0,0,0.1);
     transition: 0.1s;
 }
+
 #avatar {
     position: absolute;
     width:32px;
@@ -64,6 +63,7 @@
     background-position-y: calc(-32px * 12);
 }
 #board > div {
+    position: absolute;
     width:32px;
     height:32px;
     background-image: url("../images/tiles32.png");
@@ -76,8 +76,12 @@
     background-position-x: calc(-32px * 1);
     background-position-y: calc(-32px * 8);
 }
-#board > div[data-terrain="3"] { background-position-x: calc(-32px * 0);}
-#board > div[data-terrain="4"] { 
+#board > div[data-terrain="3"] { 
+    background-position-x: calc(-32px * 1);
+    background-position-y: calc(-32px * 9);
+}
+#board > div[data-terrain="4"] { background-position-x: calc(-32px * 0);}
+#board > div[data-terrain="5"] { 
     background-position-x: calc(-32px * 0);
     background-position-y: calc(-32px * 4);
 }

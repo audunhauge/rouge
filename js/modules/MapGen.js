@@ -13,6 +13,9 @@ class T {
   static FOREST = 7;
   static HILL = 8;
   static MOUNTAIN = 9;
+  static ROAD = 32;       // any terrain can have a road
+  static THING = 64;
+  static MONSTER = 128;
 }
 
 const B = { w: 80, h: 80 };
@@ -170,11 +173,12 @@ function build(
   const easystar = new EasyStar.js();
   easystar.setGrid(grid);
 
-  easystar.setAcceptableTiles([1, 2, 3, 4, 5, 6, 7, 8,9]);
+  easystar.setAcceptableTiles([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   easystar.setTileCost(1, 40);
   easystar.setTileCost(2, 30);
   easystar.setTileCost(3, 20);
-  easystar.setTileCost(8, 90);
+  easystar.setTileCost(8, 80);
+  easystar.setTileCost(9, 99);
   easystar.setTileCost(7, 10);
   easystar.setTileCost(6, 5);
   //easystar.enableDiagonals();
@@ -186,19 +190,38 @@ function build(
       easystar.findPath(from.x, from.y, to.x, to.y, (path) => {
         if (path) {
           roads.push(path);
+          const shallowList = [];
           path.forEach(r => {
             const {x,y} = r;
-            const t = theMap[x + w * y];
+            let t = theMap[x + w * y];
             if (t < T.GRASS) {
-                theMap[x + w * y] = T.SHALLOWS;
+                t = T.SHALLOWS;
+                shallowList.push(r);
             }
-          })
+            t |= T.ROAD;             // mark as road
+            theMap[x + w * y] = t;
+          });
+          if (shallowList.length > 5) {
+              // replace some with land
+              const midway = shallowList[Math.trunc(shallowList.length/2)];
+              makeIsland(midway);
+          }
         }
+
       });
       easystar.calculate();
     }
     return to;
   }, null);
+
+  function makeIsland(midway) {
+      const {x,y} = midway
+      theMap[x + w * y] = Math.min(roll(5,7),roll(5,7));
+      const around = neighbours(x,y,w,h);
+      around.forEach( ([x,y]) => {
+        theMap[x + w * y] = Math.min(roll(4,7),roll(4,7));
+      })
+  }
 
   function getNeighbours(x, y) {
     let n = neighbours(x, y, w, h).map(([x, y]) => theMap[x + w * y]);
