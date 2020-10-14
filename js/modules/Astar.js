@@ -7,6 +7,8 @@
 *    Bryce Neal (@prettymuchbryce)
 **/
 
+import {walkCost} from './Mapgen.js'
+
 
 
 var EasyStar = {}
@@ -117,7 +119,7 @@ EasyStar.js = function () {
     **/
     this.setGrid = function (grid) {
         collisionGrid = grid;
-        costMap = {1:100,2:90,3:20,4:1,5:2,6:5,7:15,8:50,9:90}
+        costMap = walkCost ?? {1:100,2:90,3:20,4:1,5:2,6:5,7:15,8:50,9:90};
 
         //Setup cost map
         /*

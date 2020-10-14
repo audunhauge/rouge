@@ -18,6 +18,27 @@ class T {
   static MONSTER = 128;
 }
 
+const _walkCost = {};
+_walkCost[T.OCEAN] = 100;
+_walkCost[T.SEA] = 10;
+_walkCost[T.SHALLOWS] = 5;
+_walkCost[T.GRASS] = 1;
+_walkCost[T.PLAIN] = 1.5;
+_walkCost[T.FOREST] = 3;
+_walkCost[T.HILL] = 5;
+_walkCost[T.MOUNTAIN] = 10;
+_walkCost[T.ROAD] = 0.8;
+
+
+const theWalk = {
+  get: function (obj, prop) {
+    if (prop & T.ROAD) { return 0.8; }
+    return obj[prop] ?? 1;
+  },
+};
+
+const walkCost = new Proxy(_walkCost, theWalk);
+
 const B = { w: 80, h: 80 };
 const roads = [];
 
@@ -259,4 +280,4 @@ function neighbours(x, y, w, h) {
   return n;
 }
 
-export { build, T, B, neighbours, roads };
+export { build, T, B, neighbours, roads, walkCost };

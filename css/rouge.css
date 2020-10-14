@@ -1,14 +1,15 @@
 :root {
-    --board:calc(12*32px);
+    --board: calc(12*32px);
 }
 
 #main {
     position: relative;
-    width:650px;
+    width: 650px;
     height: 500px;
-    margin:20px;
+    margin: 20px;
 }
-#main > div {
+
+#main>div {
     border: solid gray 1px;
 }
 
@@ -16,7 +17,7 @@
     position: absolute;
     left: 0;
     top: 0;
-    width:var(--board);
+    width: var(--board);
     height: var(--board);
 }
 
@@ -25,76 +26,99 @@
     position: absolute;
     left: 0;
     top: 0;
-    width:var(--board);
+    width: var(--board);
     height: var(--board);
 }
+
 #monsters,
 #actors {
     position: absolute;
     left: 0;
     top: 0;
-    width:var(--board);
+    width: var(--board);
     height: var(--board);
 }
 
 #actors.attack {
-    background-color: rgba(255,0,0,0.1);
+    background-color: rgba(255, 0, 0, 0.1);
     transition: 0.1s;
 }
 
 #avatar {
     position: absolute;
-    width:32px;
-    height:32px; 
+    width: 32px;
+    height: 32px;
     left: calc(32px*5);
     top: calc(32px*5);
     background-image: url("../images/creature32.png");
     background-position-x: calc(-32px * 0);
     background-position-y: calc(-32px * 0)
 }
+
 .monster {
     position: absolute;
-    width:32px;
-    height:32px; 
+    width: 32px;
+    height: 32px;
     left: calc(32px*5);
     top: calc(32px*5);
     background-image: url("../images/creature32.png");
     background-position-x: calc(-32px * 0);
     background-position-y: calc(-32px * 12);
 }
-#board > div {
+
+.monster.dead {
+    background-color: rgba(255, 0, 0, 0.322);
+    transform: rotate(60deg) scale(0.8);
+    filter: hue-rotate(-95deg);
+    transition-property: transform;
+    transition-delay: 200ms;
+}
+
+#board>div {
     position: absolute;
-    width:32px;
-    height:32px;
+    width: 32px;
+    height: 32px;
     background-image: url("../images/tiles32.png");
     background-position-x: calc(-32px * 0);
     background-position-y: calc(-32px * 3);
 }
 
-#board > div[data-terrain="1"] { background-position-x: calc(-32px * 6);}
-#board > div[data-terrain="2"] { 
+#board>div[data-terrain="1"] {
+    background-position-x: calc(-32px * 6);
+}
+
+#board>div[data-terrain="2"] {
     background-position-x: calc(-32px * 1);
     background-position-y: calc(-32px * 8);
 }
-#board > div[data-terrain="3"] { 
+
+#board>div[data-terrain="3"] {
     background-position-x: calc(-32px * 1);
     background-position-y: calc(-32px * 9);
 }
-#board > div[data-terrain="4"] { background-position-x: calc(-32px * 0);}
-#board > div[data-terrain="5"] { 
+
+#board>div[data-terrain="4"] {
+    background-position-x: calc(-32px * 0);
+}
+
+#board>div[data-terrain="5"] {
     background-position-x: calc(-32px * 0);
     background-position-y: calc(-32px * 4);
 }
-#board > div[data-terrain="8"] { 
+
+#board>div[data-terrain="8"] {
     background-position-x: calc(-32px * 3);
 }
-#board > div[data-terrain="7"] { 
+
+#board>div[data-terrain="7"] {
     background-position-x: calc(-32px * 2);
 }
-#board > div[data-terrain="5"] { 
+
+#board>div[data-terrain="5"] {
     background-position-x: calc(-32px * 1);
 }
-#board > div[data-terrain="6"] { 
+
+#board>div[data-terrain="6"] {
     background-position-x: calc(-32px * 3);
     background-position-y: calc(-32px * 10);
 }
@@ -105,22 +129,22 @@
     position: absolute;
     right: 10px;
     top: 0;
-    width:calc(650px - 16px - var(--board));
+    width: calc(650px - 16px - var(--board));
     height: 250px;
 }
+
 #minimap {
     position: absolute;
     right: 16px;
     bottom: 10px;
-    width:220px;
-    height:220px;
+    width: 220px;
+    height: 220px;
 }
+
 #status {
     position: absolute;
     left: 0;
     bottom: 10px;
-    width:var(--board);
+    width: var(--board);
     height: 100px;
 }
-
-

@@ -1,7 +1,7 @@
 // @ts-check
 
 import { Monster } from "./modules/Monster.js";
-import {  Player } from "./modules/Player.js";
+import { Player } from "./modules/Player.js";
 import { Map, Road } from "./modules/Terrain.js";
 import { clamp, dice, roll } from "./modules/util.js";
 import { B } from "./modules/MapGen.js";
@@ -50,8 +50,8 @@ export function setup() {
   // bevegelse av avatar
   // venter på keyup slik at vi kan sjekke om to piltaster
   // er aktive samtidig
-  const delta = {dx:0,dy:0};
-  
+  const delta = { dx: 0, dy: 0 };
+
   document.addEventListener("keydown", setkey);
   document.addEventListener("keyup", getReady);
 
@@ -59,7 +59,7 @@ export function setup() {
   // tegner veier (og elver - senere) på denne
   /**  @type {CanvasRenderingContext2D} */   // @ts-ignore
   const overCtx = canOverlay.getContext("2d");
-  const { avatar, monsters, map } = startLevel(divMonsters, divActors);
+  let { avatar, monsters, map } = startLevel(divMonsters, divActors);
   const roads = new Road(map.roads, overCtx)
   roads.render();
 
@@ -78,6 +78,7 @@ export function setup() {
    */
   function setkey(e) {
     keys[e.key] = 1;
+    keys.LAST = e.key;
   }
 
   // Bruker har ikke flytta innen gitt tidsfrist
@@ -85,7 +86,7 @@ export function setup() {
   function nextMove() {
     delta.dx = 0;
     delta.dy = 0;
-    doStuff( );
+    doStuff();
   }
 
   /**
@@ -99,15 +100,14 @@ export function setup() {
    * @param {KeyboardEvent} e
    */
   function getReady(e) {
-      let dx = 0; let dy=0;
-      dx -= (keys.ArrowLeft ?? 0);
-      dx += (keys.ArrowRight ?? 0);
-      dy -= (keys.ArrowUp ?? 0);
-      dy += (keys.ArrowDown ?? 0);
-      delta.dx = dx;
-      delta.dy = dy;
-      doStuff();
-      keys = {};     // drop alle lagra tastetrykk
+    let dx = 0; let dy = 0;
+    dx -= (keys.ArrowLeft ?? 0);
+    dx += (keys.ArrowRight ?? 0);
+    dy -= (keys.ArrowUp ?? 0);
+    dy += (keys.ArrowDown ?? 0);
+    delta.dx = dx;
+    delta.dy = dy;
+    doStuff();
   }
 
 
@@ -119,18 +119,21 @@ export function setup() {
    */
   function doStuff() {
     clearTimeout(moveTimer);
-    avatar.action(delta, map);
+    avatar.action(delta, map, keys.LAST, monsters);
     delta.dx = 0;
     delta.dy = 0;
-    keys = {};
+    keys = {};  // glem gamle tastetrykk
     enemyAction(monsters, avatar, map);
     const { x, y } = avatar;
     map.render(x - 5, y - 5, brikkeListe);
     avatar.render();
+    avatar.recover();
+    avatar.showStats(divInfo);
     const center = { x: x - 6, y: y - 6 };
     roads.overlay(center);
     map.minimap(minimapCtx, avatar);
-    moveTimer = setTimeout(nextMove,1000);
+    moveTimer = setTimeout(nextMove, 1000);
+    monsters = monsters.filter(m => m.alive || m.ragdoll > 0);
   }
 }
 
@@ -139,8 +142,12 @@ function enemyAction(monsters, avatar, map) {
   const center = { x: x - 5, y: y - 5 };
   for (let i = 0; i < monsters.length; i++) {
     let m = monsters[i];
-    m.action(avatar, map);
-    m.render(center);
+    if (m.alive) {
+      m.action(avatar, map);
+      m.render(center);
+    } else {
+      m.decay(center);
+    }
   }
 }
 
@@ -162,7 +169,7 @@ function startLevel(divMonsters, divActors) {
   avatar.render();
 
 
-  const monsters = [];
+  let monsters = [];
   for (let i = 0; i < FIENDS; i++) {
     const m = new Monster(0, 0);
     let tries;
