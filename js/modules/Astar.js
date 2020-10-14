@@ -7,7 +7,7 @@
 *    Bryce Neal (@prettymuchbryce)
 **/
 
-import {walkCost} from './Mapgen.js'
+import {walkCost} from './MapGen.js'
 
 
 
